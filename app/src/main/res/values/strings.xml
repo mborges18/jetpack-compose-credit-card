@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">JetPack Compose Credit Card</string>
+    <string name="title_compose">JetPack Compose</string>
+    <string name="title_credit_card">Credit Card</string>
+</resources>
