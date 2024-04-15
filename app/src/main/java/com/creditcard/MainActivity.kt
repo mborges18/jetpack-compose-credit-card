@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.creditcard.ui.screens.authenticator.AuthenticatorScreen
 import com.creditcard.ui.screens.splash.SplashScreen
 import com.creditcard.ui.theme.JetPackComposeCreditCardTheme
 
@@ -24,7 +25,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    SplashScreen()
+                    AuthenticatorScreen()
                 }
             }
         }
@@ -35,6 +36,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GreetingPreview() {
     JetPackComposeCreditCardTheme {
-        SplashScreen()
+        AuthenticatorScreen()
     }
 }
