@@ -26,10 +26,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,14 +48,6 @@ import androidx.compose.ui.unit.sp
 import com.creditcard.ui.theme.Blue40
 import kotlinx.coroutines.launch
 
-fun ContentDrawScope.drawWithLayer(block: ContentDrawScope.() -> Unit) {
-    with(drawContext.canvas.nativeCanvas) {
-        val checkPoint = saveLayer(null, null)
-        block()
-        restoreToCount(checkPoint)
-    }
-}
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TabLavViewPager(
@@ -64,7 +56,6 @@ fun TabLavViewPager(
     contentView: @Composable (Int) -> Unit,
 ) {
 
-    var selectedTab by remember { mutableStateOf(0) }
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { items.size })
     val selectedTabIndex = remember { derivedStateOf { pagerState.currentPage } }
@@ -73,8 +64,8 @@ fun TabLavViewPager(
         topBar = {
             BoxWithConstraints(
                 modifier
-                    .padding(8.dp)
-                    .height(56.dp)
+                    .padding(16.dp)
+                    .height(60.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .background(Blue40)
                     .padding(8.dp)
@@ -85,7 +76,7 @@ fun TabLavViewPager(
                     val tabWidth = maxWidth / items.size
 
                     val indicatorOffset by animateDpAsState(
-                        targetValue = tabWidth * selectedTab,
+                        targetValue = tabWidth * selectedTabIndex.value,
                         animationSpec = tween(durationMillis = 250, easing = FastOutSlowInEasing),
                         label = "indicator offset"
                     )
@@ -106,7 +97,10 @@ fun TabLavViewPager(
                             val padding = 8.dp.toPx()
                             drawRoundRect(
                                 topLeft = Offset(x = indicatorOffset.toPx() + padding, padding),
-                                size = Size(size.width / 2 - padding * 2, size.height - padding * 2),
+                                size = Size(
+                                    size.width / 2 - padding * 2,
+                                    size.height - padding * 2
+                                ),
                                 color = Color.Black,
                                 cornerRadius = CornerRadius(x = 8.dp.toPx(), y = 8.dp.toPx()),
                             )
@@ -117,14 +111,17 @@ fun TabLavViewPager(
                                     topLeft = Offset(x = indicatorOffset.toPx(), 0f),
                                     size = Size(size.width / 2, size.height),
                                     color = Color.White,
-                                    cornerRadius = CornerRadius(x = 8.dp.toPx(), y = 8.dp.toPx()),
+                                    cornerRadius = CornerRadius(
+                                        x = 8.dp.toPx(),
+                                        y = 8.dp.toPx()
+                                    ),
                                     blendMode = BlendMode.SrcOut
                                 )
                             }
                         }
                     ) {
                         items.forEachIndexed { index, text ->
-                            val isSelected = selectedTab == index
+                            val isSelected = selectedTabIndex.value == index
                             Box(
                                 modifier = Modifier
                                     .width(tabWidth)
@@ -135,7 +132,6 @@ fun TabLavViewPager(
                                         },
                                         indication = null,
                                         onClick = {
-                                            selectedTab = index
                                             scope.launch {
                                                 pagerState.animateScrollToPage(index)
                                             }
@@ -146,7 +142,7 @@ fun TabLavViewPager(
                                 Text(
                                     text = text,
                                     fontSize = 14.sp,
-                                    color = if(isSelected) Color.Black else Color.White
+                                    color = if (isSelected) Color.Black else Color.White
                                 )
                             }
                         }
@@ -155,19 +151,22 @@ fun TabLavViewPager(
             }
         },
         content = { paddingValues ->
-            Column(
+            HorizontalPager(
+                state = pagerState,
                 modifier = Modifier
                     .padding(paddingValues)
                     .fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                HorizontalPager(
-                    state = pagerState
-                ) {
-                    contentView.invoke(selectedTabIndex.value)
-                }
+                contentView.invoke(selectedTabIndex.value)
             }
         }
     )
+}
+
+fun ContentDrawScope.drawWithLayer(block: ContentDrawScope.() -> Unit) {
+    with(drawContext.canvas.nativeCanvas) {
+        val checkPoint = saveLayer(null, null)
+        block()
+        restoreToCount(checkPoint)
+    }
 }

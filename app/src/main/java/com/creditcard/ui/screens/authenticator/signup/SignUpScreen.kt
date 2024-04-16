@@ -19,22 +19,20 @@ import com.creditcard.ui.theme.JetPackComposeCreditCardTheme
 
 @Composable
 fun SignUpScreen() {
-    Scaffold {
-        it.calculateBottomPadding()
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
 
-        ) {
-            Text(
-                fontSize = 26.sp,
-                text = stringResource(R.string.title_signup).uppercase(),
-                fontWeight = FontWeight.SemiBold
-            )
-        }
+    ) {
+        Text(
+            fontSize = 26.sp,
+            text = stringResource(R.string.title_signup).uppercase(),
+            fontWeight = FontWeight.SemiBold
+        )
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

@@ -13,6 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "JectPack Compose Credit Card"
+rootProject.name = "JetPack Compose Credit Card"
 include(":app")
  
