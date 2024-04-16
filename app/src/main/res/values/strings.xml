@@ -3,8 +3,15 @@
 
     <string name="title_compose">JetPack Compose</string>
     <string name="title_credit_card">Credit Card</string>
-    <string name="title_signin">Acessar</string>
-    <string name="title_signup">Cadastrar</string>
+    <string name="title_signin">Acesso</string>
+    <string name="title_signup">Cadastro</string>
+    <string name="title_forgot_password">Esqueci a senha</string>
+    <string name="title_keep_connected">Continuar conectado</string>
+    <string name="title_wellcome">Seja bem vindo!</string>
+    <string name="title_wellcome_description">Com a sua carteira de cartões de crédito você pode fazer todas as suas transações de qualquer lugar.</string>
+
+    <string name="action_access">Acessar</string>
+    <string name="action_register">Cadastrar</string>
 
     <string name="label_email">E-mail</string>
     <string name="label_password">Senha</string>
