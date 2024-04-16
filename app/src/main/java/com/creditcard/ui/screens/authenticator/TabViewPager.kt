@@ -1,13 +1,20 @@
 package com.creditcard.ui.screens.authenticator
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -18,28 +25,60 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import com.creditcard.ui.theme.Blue40
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TabView(
+fun TabViewPager(
+    modifier: Modifier = Modifier,
     titles: List<String>,
     contentView: @Composable (Int) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
-    val pagerState = rememberPagerState(pageCount = { 2 })
+    val pagerState = rememberPagerState(pageCount = { titles.size })
     val selectedTabIndex = remember { derivedStateOf { pagerState.currentPage } }
 
     Scaffold(
         topBar = {
             TabRow(
+                containerColor = Blue40,
                 selectedTabIndex = selectedTabIndex.value,
-                modifier = Modifier.fillMaxWidth()
+                modifier = modifier
+                    .padding(horizontal = 10.dp, vertical = 10.dp)
+                    .height(60.dp)
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(10))
+                    .shadow(elevation = 20.dp, shape = RoundedCornerShape(10))
+                    .border(BorderStroke(0.5.dp, Color.LightGray))
+                    .size(50.dp),
+                divider = {},
+                indicator = {},
             ) {
                 titles.forEachIndexed { index, title ->
+                    val isSelected = selectedTabIndex.value == index
                     Tab(
-                        text = { Text(title) },
+                        text = { Text(
+                            text = title,
+                            color = if(isSelected) { Color.White } else { Color.Black }
+                        ) },
+                        modifier = if(isSelected) {
+                            modifier.background(Color.Transparent).clip(RoundedCornerShape(10)).fillMaxWidth()
+                        } else {
+                            modifier
+                                .background(Color.White)
+                                .clip(RoundedCornerShape(10))
+                                .fillMaxWidth()
+                                .fillMaxHeight()
+                                .height(60.dp)
+                               },
                         selected = selectedTabIndex.value == index,
+                        selectedContentColor = Blue40,
+                        unselectedContentColor = Color.White,
                         onClick = {
                             scope.launch {
                                 pagerState.animateScrollToPage(index)
