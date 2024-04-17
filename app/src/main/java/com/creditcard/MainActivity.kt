@@ -10,6 +10,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import com.creditcard.ui.navigation.NavHostScreens
 import com.creditcard.ui.screens.authenticator.AuthenticatorScreen
 import com.creditcard.ui.theme.JetPackComposeCreditCardTheme
 
@@ -19,9 +21,12 @@ class MainActivity : ComponentActivity() {
         setContent {
             JetPackComposeCreditCardTheme {
                 Scaffold(
-                    modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background),
                 ) {it.calculateBottomPadding()
-                    AuthenticatorScreen()
+                    val navController = rememberNavController()
+                    NavHostScreens(navController)
                 }
             }
         }
@@ -32,6 +37,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GreetingPreview() {
     JetPackComposeCreditCardTheme {
-        AuthenticatorScreen()
+        AuthenticatorScreen(rememberNavController())
     }
 }

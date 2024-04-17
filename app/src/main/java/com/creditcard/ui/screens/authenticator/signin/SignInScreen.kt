@@ -13,13 +13,14 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -29,6 +30,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -36,15 +38,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.creditcard.R
-import com.creditcard.ui.theme.Blue40
 import com.creditcard.ui.theme.JetPackComposeCreditCardTheme
 
 @Composable
-fun SignInScreen() {
-    val email by remember { mutableStateOf("") }
-    val password by remember { mutableStateOf("") }
+fun SignInScreen(
+    viewModel: SignInViewModel = viewModel()
+) {
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
+    val uiState by viewModel.uiState.collectAsState()
 
     Column(
         modifier = Modifier
@@ -92,22 +95,51 @@ fun SignInScreen() {
                     contentDescription = stringResource(id = R.string.label_email)
                 )
             },
-            value = email,
-            onValueChange = {}
+            isError = uiState.isEmailValid(),
+            supportingText = {
+                if (uiState.isEmailValid()) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = stringResource(id = R.string.error_invalid_field),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            },
+            value = uiState.email,
+            onValueChange = { value ->
+                if (value.length < 55) {
+                    uiState.email = value
+                }
+                            },
+            shape = RoundedCornerShape(10.dp),
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next
+            ),
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             label = { Text(text = stringResource(id = R.string.label_password)) },
-            value = password,
-            onValueChange = {},
+            value = uiState.password,
+            onValueChange = { value ->
+                if (value.length < 55) {
+                    uiState.password = value
+                }
+            },
+            shape = RoundedCornerShape(10.dp),
+            singleLine = true,
             visualTransformation = if (passwordVisible)
                 VisualTransformation.None
             else
                 PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Next
+            ),
             leadingIcon = {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_password),
@@ -132,10 +164,14 @@ fun SignInScreen() {
 
         Row(modifier = Modifier.fillMaxWidth())
         {
-            Switch(checked = true, onCheckedChange = {})
+            Switch(checked = uiState.isKeepConnected, onCheckedChange = {
+                uiState.isKeepConnected = it
+            })
             Text(
                 text = stringResource(id = R.string.title_keep_connected),
-                modifier = Modifier.align(Alignment.CenterVertically).padding(8.dp, 0.dp)
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .padding(8.dp, 0.dp)
             )
         }
 
@@ -146,7 +182,7 @@ fun SignInScreen() {
                 .fillMaxWidth()
                 .height(55.dp),
 
-            enabled = true,
+            enabled = uiState.isDataValid(),
             shape = RoundedCornerShape(10.dp),
             onClick = {},
             content = {
@@ -163,7 +199,7 @@ fun SignInScreen() {
 
             enabled = true,
             shape = RoundedCornerShape(10.dp),
-            border = BorderStroke(1.dp, Blue40),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
             onClick = {},
             content = {
                 Text(text = stringResource(R.string.title_forgot_password).uppercase())

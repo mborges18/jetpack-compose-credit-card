@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -29,7 +30,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.creditcard.ui.theme.Blue40
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -46,7 +46,7 @@ fun TabViewPager(
     Scaffold(
         topBar = {
             TabRow(
-                containerColor = Blue40,
+                containerColor = MaterialTheme.colorScheme.primary,
                 selectedTabIndex = selectedTabIndex.value,
                 modifier = modifier
                     .padding(horizontal = 10.dp, vertical = 10.dp)
@@ -77,7 +77,7 @@ fun TabViewPager(
                                 .height(60.dp)
                                },
                         selected = selectedTabIndex.value == index,
-                        selectedContentColor = Blue40,
+                        selectedContentColor = MaterialTheme.colorScheme.primary,
                         unselectedContentColor = Color.White,
                         onClick = {
                             scope.launch {
