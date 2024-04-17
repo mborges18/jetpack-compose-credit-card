@@ -1,4 +1,4 @@
-package com.creditcard.models.signin
+package com.creditcard.models.authenticator.signin
 
 import com.creditcard.models.validation.ValidationModel.isValidEmail
 

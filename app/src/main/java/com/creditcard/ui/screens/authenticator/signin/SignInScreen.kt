@@ -1,5 +1,6 @@
 package com.creditcard.ui.screens.authenticator.signin
 
+import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +28,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -46,6 +51,8 @@ import com.creditcard.ui.theme.JetPackComposeCreditCardTheme
 fun SignInScreen(
     viewModel: SignInViewModel = viewModel()
 ) {
+    var emailHasFocus by rememberSaveable { mutableStateOf(false) }
+    var passwordHasFocus by rememberSaveable { mutableStateOf(false) }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     val uiState by viewModel.uiState.collectAsState()
 
@@ -87,12 +94,17 @@ fun SignInScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .onFocusChanged {
+                    emailHasFocus = it.isFocused
+                },
             label = { Text(text = stringResource(id = R.string.label_email)) },
             leadingIcon = {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_email),
-                    contentDescription = stringResource(id = R.string.label_email)
+                    contentDescription = stringResource(id = R.string.label_email),
+                    tint = emailHasFocus.handleColorIconFocus()
                 )
             },
             isError = uiState.isEmailValid(),
@@ -117,12 +129,17 @@ fun SignInScreen(
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Next
             ),
+
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .onFocusChanged {
+                    passwordHasFocus = it.isFocused
+                },
             label = { Text(text = stringResource(id = R.string.label_password)) },
             value = uiState.password,
             onValueChange = { value ->
@@ -143,7 +160,8 @@ fun SignInScreen(
             leadingIcon = {
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.ic_password),
-                    contentDescription = stringResource(id = R.string.label_password)
+                    contentDescription = stringResource(id = R.string.label_password),
+                    tint = passwordHasFocus.handleColorIconFocus()
                 )
             },
             trailingIcon = {
@@ -154,7 +172,8 @@ fun SignInScreen(
                         imageVector = if (passwordVisible)
                             ImageVector.vectorResource(id = R.drawable.ic_eye_open)
                         else ImageVector.vectorResource(id = R.drawable.ic_eye_close),
-                        contentDescription = stringResource(id = R.string.label_password)
+                        contentDescription = stringResource(id = R.string.label_password),
+                        tint = passwordHasFocus.handleColorIconFocus()
                     )
                 }
             }
@@ -181,7 +200,12 @@ fun SignInScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(55.dp),
-
+            colors = ButtonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = Color.White,
+                disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                disabledContentColor = Color.DarkGray
+            ),
             enabled = uiState.isDataValid(),
             shape = RoundedCornerShape(10.dp),
             onClick = {},
@@ -196,8 +220,6 @@ fun SignInScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(55.dp),
-
-            enabled = true,
             shape = RoundedCornerShape(10.dp),
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
             onClick = {},
@@ -208,6 +230,8 @@ fun SignInScreen(
     }
 }
 
+@Composable
+fun Boolean.handleColorIconFocus() = if(this) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
 
 @Preview(showBackground = true)
 @Composable

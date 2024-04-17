@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.creditcard.ui.navigation.NavHostScreens
+import com.creditcard.ui.navigation.NavScreens
 import com.creditcard.ui.screens.authenticator.AuthenticatorScreen
 import com.creditcard.ui.theme.JetPackComposeCreditCardTheme
 
@@ -26,7 +27,7 @@ class MainActivity : ComponentActivity() {
                         .background(MaterialTheme.colorScheme.background),
                 ) {it.calculateBottomPadding()
                     val navController = rememberNavController()
-                    NavHostScreens(navController)
+                    NavHostScreens(navController, NavScreens.Authenticator.route)
                 }
             }
         }

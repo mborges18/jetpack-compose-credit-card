@@ -1,5 +1,6 @@
 package com.creditcard.ui.screens.splash
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,6 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -24,6 +26,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.creditcard.R
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.creditcard.models.states.UiState
 import com.creditcard.ui.navigation.NavScreens
 import com.creditcard.ui.theme.JetPackComposeCreditCardTheme
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +38,7 @@ fun SplashScreen(
     navController: NavHostController,
     viewModel: SplashViewModel = viewModel()
 ) {
+
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold (containerColor = MaterialTheme.colorScheme.primary) {
@@ -59,21 +63,17 @@ fun SplashScreen(
             )
         }
 
-        rememberCoroutineScope().launch {
-            call(viewModel = viewModel)
-            uiState.let { isUserLogged ->
-                when(isUserLogged) {
-                    true -> navController.navigate(route = NavScreens.Home.route)
-                    false -> navController.navigate(route = NavScreens.Authenticator.route)
-                }
+        LaunchedEffect(Unit) {
+            viewModel.isUserLogged()
+        }
+
+        uiState.let { isUserLogged ->
+            when(isUserLogged) {
+                is UiState.Success -> navController.navigate(route = NavScreens.Home.route)
+                is UiState.Error -> navController.navigate(route = NavScreens.Authenticator.route)
+                is UiState.Loading -> Unit
             }
         }
-    }
-}
-
-suspend fun call(viewModel: SplashViewModel) {
-    withContext(Dispatchers.Default) {
-        viewModel.isUserLogged()
     }
 }
 
