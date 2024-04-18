@@ -65,6 +65,22 @@ dependencies {
     implementation ("androidx.compose.material3:material3-adaptive-navigation-suite:1.0.0-alpha05")
     implementation ("androidx.navigation:navigation-compose:2.7.7")
 
+    implementation ("io.insert-koin:koin-core:3.3.2")
+    implementation ("io.insert-koin:koin-android:3.4.1")
+    implementation ("io.insert-koin:koin-androidx-compose:3.4.1")
+
+    val ktorVersion = "2.2.4"
+    implementation ("io.ktor:ktor-client-android:$ktorVersion")
+    implementation ("io.ktor:ktor-client-logging:$ktorVersion")
+    implementation ("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+    implementation ("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+    implementation ("org.slf4j:slf4j-android:1.7.36")
+
+
+    implementation ("io.ktor:ktor-client-json:$ktorVersion")
+    implementation ("io.ktor:ktor-client-serialization:$ktorVersion")
+
+
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

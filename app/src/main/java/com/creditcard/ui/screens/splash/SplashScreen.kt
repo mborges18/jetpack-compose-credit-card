@@ -26,7 +26,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.creditcard.R
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.creditcard.models.states.UiState
+import com.creditcard.domain.models.states.UiState
 import com.creditcard.ui.navigation.NavScreens
 import com.creditcard.ui.theme.JetPackComposeCreditCardTheme
 import kotlinx.coroutines.Dispatchers
@@ -69,9 +69,9 @@ fun SplashScreen(
 
         uiState.let { isUserLogged ->
             when(isUserLogged) {
-                is UiState.Success -> navController.navigate(route = NavScreens.Home.route)
+                is UiState.Success<*> -> navController.navigate(route = NavScreens.Home.route)
                 is UiState.Error -> navController.navigate(route = NavScreens.Authenticator.route)
-                is UiState.Loading -> Unit
+                is UiState.Loading<*> -> Unit
             }
         }
     }

@@ -1,6 +1,6 @@
-package com.creditcard.models.authenticator.signin
+package com.creditcard.domain.models.authenticator.signin
 
-import com.creditcard.models.validation.ValidationModel.isValidEmail
+import com.creditcard.domain.models.validation.ValidationModel.isValidEmail
 
 data class SignInModel(
     var email: String = String(),

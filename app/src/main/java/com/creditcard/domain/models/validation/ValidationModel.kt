@@ -1,4 +1,4 @@
-package com.creditcard.models.validation
+package com.creditcard.domain.models.validation
 
 import android.util.Patterns
 

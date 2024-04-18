@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -32,6 +33,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -45,16 +47,26 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.creditcard.R
+import com.creditcard.di.AppModule
+import com.creditcard.domain.models.authenticator.signin.SignInModel
 import com.creditcard.ui.theme.JetPackComposeCreditCardTheme
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.KoinApplication
+import org.koin.core.context.GlobalContext
+import org.koin.mp.KoinPlatformTools
 
 @Composable
 fun SignInScreen(
-    viewModel: SignInViewModel = viewModel()
+    viewModel: SignInViewModel = koinViewModel()
 ) {
     var emailHasFocus by rememberSaveable { mutableStateOf(false) }
     var passwordHasFocus by rememberSaveable { mutableStateOf(false) }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     val uiState by viewModel.uiState.collectAsState()
+    var model by remember { mutableStateOf(SignInModel()) }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var isKeepConnected by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -107,9 +119,9 @@ fun SignInScreen(
                     tint = emailHasFocus.handleColorIconFocus()
                 )
             },
-            isError = uiState.isEmailValid(),
+            isError = viewModel.model.isEmailValid(),
             supportingText = {
-                if (uiState.isEmailValid()) {
+                if (viewModel.model.isEmailValid()) {
                     Text(
                         modifier = Modifier.fillMaxWidth(),
                         text = stringResource(id = R.string.error_invalid_field),
@@ -117,10 +129,12 @@ fun SignInScreen(
                     )
                 }
             },
-            value = uiState.email,
+            value = email,
             onValueChange = { value ->
                 if (value.length < 55) {
-                    uiState.email = value
+                    email = value
+                    viewModel.model.email = value
+                    model = viewModel.model
                 }
                             },
             shape = RoundedCornerShape(10.dp),
@@ -141,10 +155,12 @@ fun SignInScreen(
                     passwordHasFocus = it.isFocused
                 },
             label = { Text(text = stringResource(id = R.string.label_password)) },
-            value = uiState.password,
+            value = password,
             onValueChange = { value ->
                 if (value.length < 55) {
-                    uiState.password = value
+                    password = value
+                    viewModel.model.password = value
+                    model = viewModel.model
                 }
             },
             shape = RoundedCornerShape(10.dp),
@@ -183,9 +199,14 @@ fun SignInScreen(
 
         Row(modifier = Modifier.fillMaxWidth())
         {
-            Switch(checked = uiState.isKeepConnected, onCheckedChange = {
-                uiState.isKeepConnected = it
-            })
+            Switch(
+                checked = isKeepConnected,
+                onCheckedChange = {
+                    isKeepConnected = it
+                    viewModel.model.isKeepConnected = it
+                    model = viewModel.model
+                }
+            )
             Text(
                 text = stringResource(id = R.string.title_keep_connected),
                 modifier = Modifier
@@ -206,9 +227,11 @@ fun SignInScreen(
                 disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                 disabledContentColor = Color.DarkGray
             ),
-            enabled = uiState.isDataValid(),
+            enabled = model.isDataValid(),
             shape = RoundedCornerShape(10.dp),
-            onClick = {},
+            onClick = {
+                viewModel.signIn()
+            },
             content = {
                 Text(text = stringResource(R.string.action_access).uppercase())
             }
@@ -222,7 +245,9 @@ fun SignInScreen(
                 .height(55.dp),
             shape = RoundedCornerShape(10.dp),
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
-            onClick = {},
+            onClick = {
+
+            },
             content = {
                 Text(text = stringResource(R.string.title_forgot_password).uppercase())
             }
@@ -237,6 +262,10 @@ fun Boolean.handleColorIconFocus() = if(this) MaterialTheme.colorScheme.primary 
 @Composable
 fun GreetingPreview() {
     JetPackComposeCreditCardTheme {
-        SignInScreen()
+        GlobalContext.startKoin {
+            modules(AppModule.instance)
+        }.also {
+            SignInScreen()
+        }
     }
 }
