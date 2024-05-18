@@ -14,10 +14,9 @@ import org.koin.dsl.module
 
 object AppModule {
     val instance = module {
-        single { SignInModel() }
         single <CreditCardApi>{ CreditCardApiImpl(KtorClient) }
         factory <CreditCardRepository>{ CreditCardRepositoryImpl(api = get()) }
         factory <SignInUseCase>{ SignInUseCaseImpl(repository = get()) }
-        viewModel { SignInViewModel(signInUseCase = get(), model = get()) }
+        viewModel { SignInViewModel(signInUseCase = get()) }
     }
 }

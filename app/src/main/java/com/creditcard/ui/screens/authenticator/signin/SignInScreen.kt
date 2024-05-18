@@ -1,6 +1,6 @@
 package com.creditcard.ui.screens.authenticator.signin
 
-import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -21,6 +22,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
@@ -29,11 +31,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -45,28 +45,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.creditcard.R
 import com.creditcard.di.AppModule
 import com.creditcard.domain.models.authenticator.signin.SignInModel
+import com.creditcard.domain.models.authenticator.signin.SignInState
+import com.creditcard.domain.models.states.SignInUseCaseState
 import com.creditcard.ui.theme.JetPackComposeCreditCardTheme
+import io.ktor.util.reflect.instanceOf
 import org.koin.androidx.compose.koinViewModel
-import org.koin.core.KoinApplication
 import org.koin.core.context.GlobalContext
-import org.koin.mp.KoinPlatformTools
 
 @Composable
 fun SignInScreen(
     viewModel: SignInViewModel = koinViewModel()
 ) {
-    var emailHasFocus by rememberSaveable { mutableStateOf(false) }
-    var passwordHasFocus by rememberSaveable { mutableStateOf(false) }
-    var passwordVisible by rememberSaveable { mutableStateOf(false) }
     val uiState by viewModel.uiState.collectAsState()
-    var model by remember { mutableStateOf(SignInModel()) }
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var isKeepConnected by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -105,94 +98,20 @@ fun SignInScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .onFocusChanged {
-                    emailHasFocus = it.isFocused
-                },
-            label = { Text(text = stringResource(id = R.string.label_email)) },
-            leadingIcon = {
-                Icon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_email),
-                    contentDescription = stringResource(id = R.string.label_email),
-                    tint = emailHasFocus.handleColorIconFocus()
-                )
-            },
-            isError = viewModel.model.isEmailValid(),
-            supportingText = {
-                if (viewModel.model.isEmailValid()) {
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = stringResource(id = R.string.error_invalid_field),
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
-            },
-            value = email,
-            onValueChange = { value ->
-                if (value.length < 55) {
-                    email = value
-                    viewModel.model.email = value
-                    model = viewModel.model
-                }
-                            },
-            shape = RoundedCornerShape(10.dp),
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Email,
-                imeAction = ImeAction.Next
-            ),
-
+        InputEmail(
+            setEmail = { viewModel.setEmail(it) },
+            email = viewModel.modelState.email,
+            hasError = viewModel.getStateInvalid().emailIsInvalid,
+            messageError = viewModel.getStateInvalid().emailMessage
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        OutlinedTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .onFocusChanged {
-                    passwordHasFocus = it.isFocused
-                },
-            label = { Text(text = stringResource(id = R.string.label_password)) },
-            value = password,
-            onValueChange = { value ->
-                if (value.length < 55) {
-                    password = value
-                    viewModel.model.password = value
-                    model = viewModel.model
-                }
-            },
-            shape = RoundedCornerShape(10.dp),
-            singleLine = true,
-            visualTransformation = if (passwordVisible)
-                VisualTransformation.None
-            else
-                PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Next
-            ),
-            leadingIcon = {
-                Icon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_password),
-                    contentDescription = stringResource(id = R.string.label_password),
-                    tint = passwordHasFocus.handleColorIconFocus()
-                )
-            },
-            trailingIcon = {
-                IconButton(onClick = {
-                    passwordVisible = passwordVisible.not()
-                }) {
-                    Icon(
-                        imageVector = if (passwordVisible)
-                            ImageVector.vectorResource(id = R.drawable.ic_eye_open)
-                        else ImageVector.vectorResource(id = R.drawable.ic_eye_close),
-                        contentDescription = stringResource(id = R.string.label_password),
-                        tint = passwordHasFocus.handleColorIconFocus()
-                    )
-                }
-            }
+        InputPassword(
+            setPassword = { viewModel.setPassword(it) },
+            password = viewModel.modelState.password,
+            hasError = viewModel.getStateInvalid().passwordIsInvalid,
+            messageError = viewModel.getStateInvalid().passwordMessage
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -200,11 +119,9 @@ fun SignInScreen(
         Row(modifier = Modifier.fillMaxWidth())
         {
             Switch(
-                checked = isKeepConnected,
+                checked = viewModel.modelState.isKeepConnected,
                 onCheckedChange = {
-                    isKeepConnected = it
-                    viewModel.model.isKeepConnected = it
-                    model = viewModel.model
+                    viewModel.setKeepConnected(it)
                 }
             )
             Text(
@@ -227,13 +144,17 @@ fun SignInScreen(
                 disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                 disabledContentColor = Color.DarkGray
             ),
-            enabled = model.isDataValid(),
+            enabled = viewModel.isEnabledButton(),
             shape = RoundedCornerShape(10.dp),
             onClick = {
-                viewModel.signIn()
+                viewModel.setSubmit()
             },
             content = {
-                Text(text = stringResource(R.string.action_access).uppercase())
+                if(viewModel.getStateIsLoading()) {
+                    CircularProgressIndicator()
+                } else {
+                    Text(text = stringResource(R.string.action_access).uppercase())
+                }
             }
         )
 
@@ -256,7 +177,16 @@ fun SignInScreen(
 }
 
 @Composable
-fun Boolean.handleColorIconFocus() = if(this) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+fun handleColorIconFocus(hasFocus: Boolean, hasError: Boolean) =
+    if(hasError){
+        MaterialTheme.colorScheme.error
+    } else {
+        if(hasFocus) {
+            MaterialTheme.colorScheme.primary
+        } else {
+            MaterialTheme.colorScheme.onSurfaceVariant
+        }
+    }
 
 @Preview(showBackground = true)
 @Composable

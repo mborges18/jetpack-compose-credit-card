@@ -1,6 +1,5 @@
 package com.creditcard.ui.screens.splash
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,8 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -26,12 +23,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.creditcard.R
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.creditcard.domain.models.states.UiState
+import com.creditcard.domain.models.states.SignInUseCaseState
 import com.creditcard.ui.navigation.NavScreens
 import com.creditcard.ui.theme.JetPackComposeCreditCardTheme
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @Composable
 fun SplashScreen(
@@ -69,9 +63,9 @@ fun SplashScreen(
 
         uiState.let { isUserLogged ->
             when(isUserLogged) {
-                is UiState.Success<*> -> navController.navigate(route = NavScreens.Home.route)
-                is UiState.Error -> navController.navigate(route = NavScreens.Authenticator.route)
-                is UiState.Loading<*> -> Unit
+                is SignInUseCaseState.Success<*> -> navController.navigate(route = NavScreens.Home.route)
+                is SignInUseCaseState.Error -> navController.navigate(route = NavScreens.Authenticator.route)
+                is SignInUseCaseState.Loading<*> -> Unit
             }
         }
     }
