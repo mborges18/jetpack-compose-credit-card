@@ -1,6 +1,7 @@
 package com.creditcard.core.components.button
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
@@ -42,12 +43,12 @@ fun ButtonSwitch(
            },
             colors = SwitchColors(
                 checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
-                checkedTrackColor = MaterialTheme.colorScheme.primary,
+                checkedTrackColor = if(isSystemInDarkTheme()) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.primary,
                 checkedBorderColor = Color.Transparent,
                 checkedIconColor = MaterialTheme.colorScheme.primary,
 
                 uncheckedThumbColor = MaterialTheme.colorScheme.onPrimary,
-                uncheckedTrackColor = MaterialTheme.colorScheme.surfaceContainer,
+                uncheckedTrackColor = if(isSystemInDarkTheme()) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surfaceContainer,
                 uncheckedBorderColor = Color.Transparent,
                 uncheckedIconColor = MaterialTheme.colorScheme.surfaceContainer,
 

@@ -66,7 +66,7 @@ fun TabLavViewPager(
         topBar = {
             BoxWithConstraints(
                 modifier
-                    .padding(16.dp)
+                    .padding(top = 46.dp, start = 16.dp, end = 16.dp, bottom = 16.dp)
                     .height(60.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .background(MaterialTheme.colorScheme.primary)
