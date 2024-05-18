@@ -36,9 +36,9 @@ class SignInUseCaseImpl(
              is HttpState.Unauthorized -> SignInUseCaseState.Invalid(
                  SignInState(
                  emailIsInvalid = true,
-                 emailMessage = "O e-email pode está errado",
+                 emailMessage = "O e-email pode estar errado",
                  passwordIsInvalid = true,
-                 passwordMessage = "a senha pode está errada"
+                 passwordMessage = "a senha pode estar errada"
              )
              )
             else -> SignInUseCaseState.Error
