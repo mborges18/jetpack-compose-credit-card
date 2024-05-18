@@ -1,5 +1,6 @@
 package com.creditcard.features.authenticator.signin.ui
 
+import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -100,6 +101,7 @@ fun SignInScreen(
 
         TextField(
             label = stringResource(id = R.string.label_password),
+            placeholder = stringResource(id = R.string.placeholder_password),
             getValueChange = { viewModel.setPassword(it) },
             value = viewModel.modelState.password,
             hasError = viewModel.getStateInvalid().passwordIsInvalid,
@@ -148,7 +150,6 @@ fun handleColorIconFocus(hasFocus: Boolean, hasError: Boolean) =
         }
     }
 
-@Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     JetPackComposeCreditCardTheme {

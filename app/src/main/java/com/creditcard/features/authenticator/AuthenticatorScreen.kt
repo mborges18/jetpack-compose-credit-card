@@ -13,6 +13,8 @@ import com.creditcard.R
 import com.creditcard.features.authenticator.signin.ui.SignInScreen
 import com.creditcard.features.authenticator.signup.ui.SignUpScreen
 import com.creditcard.core.theme.JetPackComposeCreditCardTheme
+import com.creditcard.features.authenticator.signin.di.SignInModule
+import org.koin.core.context.GlobalContext
 
 @Composable
 fun AuthenticatorScreen(
@@ -39,9 +41,14 @@ fun AuthenticatorScreen(
 @Preview(showBackground = true,
     uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL
 )
+
 @Composable
 fun GreetingPreview() {
     JetPackComposeCreditCardTheme {
-        AuthenticatorScreen(rememberNavController())
+        GlobalContext.startKoin {
+            modules(SignInModule.instance)
+        }.also {
+            AuthenticatorScreen(rememberNavController())
+        }
     }
 }

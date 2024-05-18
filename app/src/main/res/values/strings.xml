@@ -16,5 +16,7 @@
     <string name="label_email">E-mail</string>
     <string name="label_password">Senha</string>
 
+    <string name="placeholder_password">Ex: A@123</string>
+
     <string name="error_invalid_field">Campo inválido</string>
 </resources>

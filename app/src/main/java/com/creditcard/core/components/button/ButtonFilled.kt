@@ -20,16 +20,15 @@ fun ButtonFilled(
     isLoading: Boolean,
     onClick: () -> Unit
 ) {
-
     Button(
         modifier = Modifier
             .fillMaxWidth()
             .height(55.dp),
         colors = ButtonColors(
             containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = Color.White,
-            disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-            disabledContentColor = Color.DarkGray
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
         ),
         enabled = isEnabled,
         shape = RoundedCornerShape(10.dp),
@@ -40,7 +39,8 @@ fun ButtonFilled(
             if(isLoading) {
                 CircularProgressIndicator()
             } else {
-                Text(text = text)
+                Text(text = text, color = if(isEnabled) {
+                    MaterialTheme.colorScheme.onPrimary } else { MaterialTheme.colorScheme.onSurfaceVariant })
             }
         }
     )
