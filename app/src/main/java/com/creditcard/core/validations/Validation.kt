@@ -2,6 +2,6 @@ package com.creditcard.core.validations
 
 import android.util.Patterns
 
-object ValidationModel {
+object Validation {
     fun String.isInValidEmail() = Patterns.EMAIL_ADDRESS.matcher(this).matches().not()
 }

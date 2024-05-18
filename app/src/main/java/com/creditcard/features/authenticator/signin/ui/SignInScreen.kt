@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -32,6 +33,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.creditcard.R
+import com.creditcard.core.components.button.ButtonFilled
+import com.creditcard.core.components.button.ButtonOutline
+import com.creditcard.core.components.button.ButtonSwitch
+import com.creditcard.core.components.input.TextField
 import com.creditcard.features.authenticator.signin.di.SignInModule
 import com.creditcard.core.theme.JetPackComposeCreditCardTheme
 import org.koin.androidx.compose.koinViewModel
@@ -69,7 +74,9 @@ fun SignInScreen(
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.align(Alignment.Start)
         )
+
         Spacer(modifier = Modifier.height(8.dp))
+
         Text(
             fontSize = 14.sp,
             text = stringResource(R.string.title_wellcome_description),
@@ -80,80 +87,51 @@ fun SignInScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        InputEmail(
-            setEmail = { viewModel.setEmail(it) },
-            email = viewModel.modelState.email,
+        TextField(
+            label = stringResource(id = R.string.label_email),
+            getValueChange = { viewModel.setEmail(it) },
+            value = viewModel.modelState.email,
             hasError = viewModel.getStateInvalid().emailIsInvalid,
-            messageError = viewModel.getStateInvalid().emailMessage
+            messageError = viewModel.getStateInvalid().emailMessage,
+            leadingIcon = ImageVector.vectorResource(id = R.drawable.ic_email),
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        InputPassword(
-            setPassword = { viewModel.setPassword(it) },
-            password = viewModel.modelState.password,
+        TextField(
+            label = stringResource(id = R.string.label_password),
+            getValueChange = { viewModel.setPassword(it) },
+            value = viewModel.modelState.password,
             hasError = viewModel.getStateInvalid().passwordIsInvalid,
-            messageError = viewModel.getStateInvalid().passwordMessage
+            messageError = viewModel.getStateInvalid().passwordMessage,
+            leadingIcon = ImageVector.vectorResource(id = R.drawable.ic_password),
+            isPassword = true
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Row(modifier = Modifier.fillMaxWidth())
-        {
-            Switch(
-                checked = viewModel.modelState.isKeepConnected,
-                onCheckedChange = {
-                    viewModel.setKeepConnected(it)
-                }
-            )
-            Text(
-                text = stringResource(id = R.string.title_keep_connected),
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .padding(8.dp, 0.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(55.dp),
-            colors = ButtonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = Color.White,
-                disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                disabledContentColor = Color.DarkGray
-            ),
-            enabled = viewModel.isEnabledButton(),
-            shape = RoundedCornerShape(10.dp),
-            onClick = {
-                viewModel.setSubmit()
-            },
-            content = {
-                if(viewModel.getStateIsLoading()) {
-                    CircularProgressIndicator()
-                } else {
-                    Text(text = stringResource(R.string.action_access).uppercase())
-                }
+        ButtonSwitch(
+            text = stringResource(id = R.string.title_keep_connected),
+            isChecked = viewModel.modelState.isKeepConnected,
+            onCheckedChange = {
+                viewModel.setKeepConnected(it)
             }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedButton(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(55.dp),
-            shape = RoundedCornerShape(10.dp),
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
-            onClick = {
+        ButtonFilled(
+            text = stringResource(R.string.action_access).uppercase(),
+            isEnabled = viewModel.isEnabledButton(),
+            isLoading = viewModel.getStateIsLoading(),
+            onClick = { viewModel.setSubmit() }
+        )
 
-            },
-            content = {
-                Text(text = stringResource(R.string.title_forgot_password).uppercase())
-            }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        ButtonOutline(
+            text = stringResource(R.string.title_forgot_password).uppercase(),
+            onCLick = {}
         )
     }
 }

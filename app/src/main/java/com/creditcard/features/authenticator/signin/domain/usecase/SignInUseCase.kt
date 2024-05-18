@@ -5,7 +5,7 @@ import com.creditcard.core.clientnetwork.HttpState
 import com.creditcard.features.authenticator.signin.data.repository.CreditCardRepository
 import com.creditcard.features.authenticator.signin.domain.model.SignInModel
 import com.creditcard.features.authenticator.signin.domain.model.SignInState
-import com.creditcard.core.validations.ValidationModel.isInValidEmail
+import com.creditcard.core.validations.Validation.isInValidEmail
 import com.creditcard.features.authenticator.signin.data.mapper.toRequest
 
 class SignInUseCaseImpl(
