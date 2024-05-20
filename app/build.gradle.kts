@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -64,6 +65,7 @@ dependencies {
     implementation ("androidx.compose.material3:material3-window-size-class:1.2.1")
     implementation ("androidx.compose.material3:material3-adaptive-navigation-suite:1.0.0-alpha05")
     implementation ("androidx.navigation:navigation-compose:2.7.7")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 
     implementation ("io.insert-koin:koin-core:3.3.2")
     implementation ("io.insert-koin:koin-android:3.4.1")

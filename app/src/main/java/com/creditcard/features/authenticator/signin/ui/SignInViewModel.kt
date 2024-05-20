@@ -6,80 +6,64 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.creditcard.features.authenticator.signin.domain.model.SignInModel
-import com.creditcard.features.authenticator.signin.domain.model.SignInState
-import com.creditcard.features.authenticator.signin.domain.usecase.SignInUseCaseState
 import com.creditcard.features.authenticator.signin.domain.usecase.SignInUseCase
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import com.creditcard.features.common.domain.usecase.ValidateEmailUseCase
+import com.creditcard.features.common.domain.usecase.ValidatePasswordUseCase
+import com.creditcard.features.common.ui.UiState
 import kotlinx.coroutines.launch
 
 class SignInViewModel(
     private val signInUseCase: SignInUseCase,
+    private val emailUseCase: ValidateEmailUseCase,
+    private val passwordUseCase: ValidatePasswordUseCase
 ): ViewModel() {
 
-    private val _uiState = MutableStateFlow<SignInUseCaseState>(SignInUseCaseState.Initial)
-    val uiState: StateFlow<SignInUseCaseState> = _uiState.asStateFlow()
-
-    var modelState by mutableStateOf(SignInModel())
+    var state by mutableStateOf(SignInState())
 
     fun setEmail(value: String) {
-        resetEmail()
-        modelState = modelState.copy(email = value)
-    }
-
-    private fun resetEmail() {
-        modelState.state = SignInUseCaseState.Invalid(
-            SignInState(
-            emailIsInvalid = false,
-            emailMessage = String()
-        )
-        )
+        state = state.copy(email = EmailState(value = value))
     }
 
     fun setPassword(value: String) {
-        resetPassword()
-        modelState = modelState.copy(password = value)
-    }
-
-    private fun resetPassword() {
-        modelState.state = SignInUseCaseState.Invalid(
-            SignInState(
-            passwordIsInvalid = false,
-            passwordMessage = String()
-        )
-        )
+        state = state.copy(password = PasswordState(value = value))
     }
 
     fun setKeepConnected(value: Boolean) {
-        modelState = modelState.copy(isKeepConnected = value)
+        state = state.copy(isKeepConnected = value)
     }
 
-    fun isEnabledButton() = (modelState.email.length > 6
-            && modelState.password.length > 5 && modelState.password.length < 13) && getStateIsLoading().not()
-
-    fun getStateInvalid(): SignInState {
-        return if(modelState.state is SignInUseCaseState.Invalid<*>) {
-            ((modelState.state as SignInUseCaseState.Invalid<*>).data as SignInState)
-        } else {
-            SignInState()
-        }
-    }
-
-    fun getStateIsLoading(): Boolean {
-        return if(modelState.state is SignInUseCaseState.Loading<*>) {
-            ((modelState.state as SignInUseCaseState.Loading<*>).data as Boolean)
-        } else {
-            false
-        }
-    }
+    fun isEnabledButton() =
+        (state.email.value.length > 6
+                && state.password.value.length > 5
+                && state.password.value.length < 13
+                && (state.ui is UiState.Loading).not())
 
     fun setSubmit() = viewModelScope.launch {
-        try {
-            modelState = modelState.copy(state = SignInUseCaseState.Loading(true))
-            modelState = modelState.copy(state = signInUseCase.execute(modelState))
-        } catch (e: Exception) {
-            e.printStackTrace()
+        val resultEmail = emailUseCase.execute(state.email.value)
+        val resultPassword = passwordUseCase.execute(state.password.value)
+
+        state = state.copy(email = EmailState(
+            value = state.email.value,
+            message = resultEmail.message,
+            hasError = resultEmail.hasError)
+        )
+        state = state.copy(password = PasswordState(
+            value = state.password.value,
+            message = resultPassword.message,
+            hasError = resultPassword.hasError)
+        )
+
+        if (resultEmail.hasError.not() && resultPassword.hasError.not()) {
+            try {
+                state = state.copy(ui = UiState.Loading)
+                val response = signInUseCase.execute(
+                    SignInModel(state.email.value, state.password.value, state.isKeepConnected)
+                )
+                state = state.copy(ui = response)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                state = state.copy(ui = UiState.Initial)
+            }
         }
     }
 }

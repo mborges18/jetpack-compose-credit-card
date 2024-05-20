@@ -1,45 +1,34 @@
 package com.creditcard.features.authenticator.signin.ui
 
-import android.content.res.Configuration
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
+import com.creditcard.NavScreens
 import com.creditcard.R
 import com.creditcard.core.components.button.ButtonFilled
 import com.creditcard.core.components.button.ButtonOutline
 import com.creditcard.core.components.button.ButtonSwitch
+import com.creditcard.core.components.dialog.Dialog
 import com.creditcard.core.components.input.TextField
 import com.creditcard.features.authenticator.signin.di.SignInModule
 import com.creditcard.core.theme.JetPackComposeCreditCardTheme
+import com.creditcard.features.common.ui.UiState
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.context.GlobalContext
 
@@ -47,7 +36,8 @@ import org.koin.core.context.GlobalContext
 fun SignInScreen(
     viewModel: SignInViewModel = koinViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+
+    val navController = rememberNavController()
 
     Column(
         modifier = Modifier
@@ -91,9 +81,9 @@ fun SignInScreen(
         TextField(
             label = stringResource(id = R.string.label_email),
             getValueChange = { viewModel.setEmail(it) },
-            value = viewModel.modelState.email,
-            hasError = viewModel.getStateInvalid().emailIsInvalid,
-            messageError = viewModel.getStateInvalid().emailMessage,
+            value = viewModel.state.email.value,
+            hasError = viewModel.state.email.hasError,
+            messageError = viewModel.state.email.message,
             leadingIcon = ImageVector.vectorResource(id = R.drawable.ic_email),
         )
 
@@ -103,9 +93,9 @@ fun SignInScreen(
             label = stringResource(id = R.string.label_password),
             placeholder = stringResource(id = R.string.placeholder_password),
             getValueChange = { viewModel.setPassword(it) },
-            value = viewModel.modelState.password,
-            hasError = viewModel.getStateInvalid().passwordIsInvalid,
-            messageError = viewModel.getStateInvalid().passwordMessage,
+            value = viewModel.state.password.value,
+            hasError = viewModel.state.password.hasError,
+            messageError =  viewModel.state.password.message,
             leadingIcon = ImageVector.vectorResource(id = R.drawable.ic_password),
             isPassword = true
         )
@@ -114,7 +104,7 @@ fun SignInScreen(
 
         ButtonSwitch(
             text = stringResource(id = R.string.title_keep_connected),
-            isChecked = viewModel.modelState.isKeepConnected,
+            isChecked = viewModel.state.isKeepConnected,
             onCheckedChange = {
                 viewModel.setKeepConnected(it)
             }
@@ -125,7 +115,7 @@ fun SignInScreen(
         ButtonFilled(
             text = stringResource(R.string.action_access).uppercase(),
             isEnabled = viewModel.isEnabledButton(),
-            isLoading = viewModel.getStateIsLoading(),
+            isLoading = viewModel.state.ui is UiState.Loading,
             onClick = { viewModel.setSubmit() }
         )
 
@@ -136,19 +126,20 @@ fun SignInScreen(
             onCLick = {}
         )
     }
-}
 
-@Composable
-fun handleColorIconFocus(hasFocus: Boolean, hasError: Boolean) =
-    if(hasError){
-        MaterialTheme.colorScheme.error
-    } else {
-        if(hasFocus) {
-            MaterialTheme.colorScheme.primary
-        } else {
-            MaterialTheme.colorScheme.onSurfaceVariant
-        }
+    if(viewModel.state.ui is UiState.Success<String>) {
+        navController.navigate(NavScreens.Home.route)
     }
+
+    Dialog(
+        icon = ImageVector.vectorResource(id = R.drawable.ic_password),
+        title = stringResource(id = R.string.title_info),
+        text = stringResource(id = R.string.msg_error_unknow),
+        onConfirm = {},
+        onCanceled = {},
+        isVisible = (viewModel.state.ui is UiState.Error)
+    )
+}
 
 @Composable
 fun GreetingPreview() {

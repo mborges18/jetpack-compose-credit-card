@@ -15,7 +15,7 @@ object SignInModule {
     val instance = module {
         single <CreditCardApi>{ CreditCardApiImpl(KtorClient) }
         factory <CreditCardRepository>{ CreditCardRepositoryImpl(api = get()) }
-        factory <SignInUseCase>{ SignInUseCaseImpl(repository = get()) }
-        viewModel { SignInViewModel(signInUseCase = get()) }
+        factory <SignInUseCase>{ SignInUseCaseImpl(repository = get(), emailUseCase = get(), passwordUseCase = get()) }
+        viewModel { SignInViewModel(signInUseCase = get(), emailUseCase = get(), passwordUseCase = get()) }
     }
 }

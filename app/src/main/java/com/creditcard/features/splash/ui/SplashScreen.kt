@@ -23,7 +23,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.creditcard.R
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.creditcard.features.authenticator.signin.domain.usecase.SignInUseCaseState
+import com.creditcard.features.common.ui.UiState
 import com.creditcard.NavScreens
 import com.creditcard.core.theme.JetPackComposeCreditCardTheme
 
@@ -33,7 +33,7 @@ fun SplashScreen(
     viewModel: SplashViewModel = viewModel()
 ) {
 
-    val uiState by viewModel.uiState.collectAsState()
+//    val uiState by viewModel.uiState.collectAsState()
 
     Scaffold (containerColor = MaterialTheme.colorScheme.primary) {
         it.calculateBottomPadding()
@@ -61,13 +61,14 @@ fun SplashScreen(
             viewModel.isUserLogged()
         }
 
-        uiState.let { isUserLogged ->
-            when(isUserLogged) {
-                is SignInUseCaseState.Success<*> -> navController.navigate(route = NavScreens.Home.route)
-                is SignInUseCaseState.Error -> navController.navigate(route = NavScreens.Authenticator.route)
-                is SignInUseCaseState.Loading<*> -> Unit
-            }
-        }
+//        uiState.let { isUserLogged ->
+//            when(isUserLogged) {
+//                is UiState.Success<*> -> navController.navigate(route = NavScreens.Home.route)
+//                is UiState.Error -> navController.navigate(route = NavScreens.Authenticator.route)
+//                is UiState.Loading<*> -> Unit
+//                else -> Unit
+//            }
+//        }
     }
 }
 

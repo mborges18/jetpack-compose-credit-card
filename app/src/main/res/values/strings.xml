@@ -5,6 +5,7 @@
     <string name="title_credit_card">Credit Card</string>
     <string name="title_signin">Acesso</string>
     <string name="title_signup">Cadastro</string>
+    <string name="title_info">Informação</string>
     <string name="title_forgot_password">Esqueci a senha</string>
     <string name="title_keep_connected">Continuar conectado</string>
     <string name="title_wellcome">Seja bem vindo!</string>
@@ -12,11 +13,16 @@
 
     <string name="action_access">Acessar</string>
     <string name="action_register">Cadastrar</string>
+    <string name="action_confirm">Confirmar</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_ok">Ok</string>
+    <string name="action_update">Atualizar</string>
 
     <string name="label_email">E-mail</string>
     <string name="label_password">Senha</string>
 
     <string name="placeholder_password">Ex: A@123</string>
 
-    <string name="error_invalid_field">Campo inválido</string>
+    <string name="msg_invalid_field">Campo inválido</string>
+    <string name="msg_error_unknow">Ocorreu um erro inesperado. Por favor, tente mais tarde.</string>
 </resources>
