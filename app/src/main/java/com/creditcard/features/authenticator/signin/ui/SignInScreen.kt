@@ -24,7 +24,7 @@ import com.creditcard.R
 import com.creditcard.core.components.button.ButtonFilled
 import com.creditcard.core.components.button.ButtonOutline
 import com.creditcard.core.components.button.ButtonSwitch
-import com.creditcard.core.components.dialog.Dialog
+import com.creditcard.core.components.dialog.DialogConfirm
 import com.creditcard.core.components.input.TextField
 import com.creditcard.features.authenticator.signin.di.SignInModule
 import com.creditcard.core.theme.JetPackComposeCreditCardTheme
@@ -45,11 +45,11 @@ fun SignInScreen(
             .padding(horizontal = 16.dp, vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Row(modifier = Modifier.padding(0.dp, 32.dp)){
+        Row(modifier = Modifier.padding(horizontal = 0.dp, vertical = 16.dp)){
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_lock),
-                contentDescription = stringResource(id = R.string.label_email),
-                modifier = Modifier.padding(0.dp, 2.dp, 4.dp, 0.dp)
+                contentDescription = stringResource(id = R.string.title_signin),
+                modifier = Modifier.padding(top = 2.dp, end = 4.dp)
             )
             Text(
                 fontSize = 28.sp,
@@ -63,7 +63,7 @@ fun SignInScreen(
             fontSize = 20.sp,
             text = stringResource(R.string.title_wellcome),
             fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.align(Alignment.Start)
+            modifier = Modifier.padding(top = 10.dp).align(Alignment.Start)
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -131,13 +131,13 @@ fun SignInScreen(
         navController.navigate(NavScreens.Home.route)
     }
 
-    Dialog(
-        icon = ImageVector.vectorResource(id = R.drawable.ic_password),
+    DialogConfirm(
+        icon = ImageVector.vectorResource(id = R.drawable.ic_question),
         title = stringResource(id = R.string.title_info),
         text = stringResource(id = R.string.msg_error_unknow),
         onConfirm = {},
         onCanceled = {},
-        isVisible = (viewModel.state.ui is UiState.Error)
+        isVisible = true
     )
 }
 

@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.creditcard.features.authenticator.signin.domain.model.SignInModel
 import com.creditcard.features.authenticator.signin.domain.usecase.SignInUseCase
+import com.creditcard.features.common.domain.model.EmailState
+import com.creditcard.features.common.domain.model.PasswordState
 import com.creditcard.features.common.domain.usecase.ValidateEmailUseCase
 import com.creditcard.features.common.domain.usecase.ValidatePasswordUseCase
 import com.creditcard.features.common.ui.UiState
@@ -56,10 +58,22 @@ class SignInViewModel(
         if (resultEmail.hasError.not() && resultPassword.hasError.not()) {
             try {
                 state = state.copy(ui = UiState.Loading)
-                val response = signInUseCase.execute(
+                val result = signInUseCase.execute(
                     SignInModel(state.email.value, state.password.value, state.isKeepConnected)
                 )
-                state = state.copy(ui = response)
+                if(result is UiState.Unauthorized) {
+                    state = state.copy(email = EmailState(
+                        value = state.email.value,
+                        message = "Seu email pode estar errado",
+                        hasError = true)
+                    )
+                    state = state.copy(password = PasswordState(
+                        value = state.password.value,
+                        message = "Sua senha pode estar errada",
+                        hasError = true)
+                    )
+                }
+                state = state.copy(ui = result)
             } catch (e: Exception) {
                 e.printStackTrace()
                 state = state.copy(ui = UiState.Initial)

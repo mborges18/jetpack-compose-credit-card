@@ -2,6 +2,7 @@ package com.creditcard.core.components.button
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -15,17 +16,17 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ButtonFilled(
+    containerColor: Color = MaterialTheme.colorScheme.primary,
     text: String,
     isEnabled: Boolean,
     isLoading: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    isWrap: Boolean = false,
 ) {
     Button(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(55.dp),
+        modifier = if(isWrap) Modifier.wrapContentWidth().height(55.dp) else Modifier.fillMaxWidth().height(55.dp),
         colors = ButtonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
+            containerColor = containerColor,
             contentColor = MaterialTheme.colorScheme.onPrimary,
             disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
             disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
